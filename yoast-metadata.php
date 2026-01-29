@@ -6,7 +6,7 @@
  * Requires at least: 6.1
  * Requires PHP:      7.4
  * Requires Plugins:  wordpress-seo
- * Version:           0.0.4
+ * Version:           0.0.5
  * Author:            Marius Paduraru
  * Author URI:        https://github.com/holodev
  * License:           GPL-2.0-or-later
@@ -31,10 +31,8 @@ define( 'YOAST_METADATA_FILE', __FILE__ );
 define( 'YOAST_METADATA_PATH', plugin_dir_path( __FILE__ ) );
 define( 'YOAST_METADATA_URL', plugin_dir_url( __FILE__ ) );
 
-// Autoloader.
-if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
-    require_once __DIR__ . '/vendor/autoload.php';
-}
+// Autoloader - use custom PSR-4 autoloader instead of Composer.
+require_once __DIR__ . '/includes/autoload.php';
 
 /**
  * Initialize the plugin.

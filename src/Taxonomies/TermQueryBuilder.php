@@ -26,57 +26,10 @@ final class TermQueryBuilder {
 		$args = [
 			'taxonomy'   => $filters['taxonomies'] ?? [ 'category', 'post_tag' ],
 			'hide_empty' => false,
-			'number'     => $filters['per_page'] ?? self::TERMS_PER_PAGE,
-			'offset'     => ( ( $filters['page'] ?? 1 ) - 1 ) * ( $filters['per_page'] ?? self::TERMS_PER_PAGE ),
+			'number'     => 0, // Get all terms since we filter in PHP.
 			'orderby'    => 'term_id',
 			'order'      => 'ASC',
 		];
-
-		// Filter by meta existence.
-		if ( ! empty( $filters['has_meta'] ) ) {
-			$args['meta_query'] = [
-				'relation' => 'OR',
-				[
-					'key'     => '_yoast_wpseo_title',
-					'compare' => 'EXISTS',
-				],
-				[
-					'key'     => '_yoast_wpseo_metadesc',
-					'compare' => 'EXISTS',
-				],
-			];
-		}
-
-		// Filter by empty meta (terms needing SEO).
-		if ( ! empty( $filters['empty_meta'] ) ) {
-			$args['meta_query'] = [
-				'relation' => 'AND',
-				[
-					'relation' => 'OR',
-					[
-						'key'     => '_yoast_wpseo_title',
-						'compare' => 'NOT EXISTS',
-					],
-					[
-						'key'     => '_yoast_wpseo_title',
-						'value'   => '',
-						'compare' => '=',
-					],
-				],
-				[
-					'relation' => 'OR',
-					[
-						'key'     => '_yoast_wpseo_metadesc',
-						'compare' => 'NOT EXISTS',
-					],
-					[
-						'key'     => '_yoast_wpseo_metadesc',
-						'value'   => '',
-						'compare' => '=',
-					],
-				],
-			];
-		}
 
 		// Search filter.
 		if ( ! empty( $filters['search'] ) ) {
@@ -87,15 +40,53 @@ final class TermQueryBuilder {
 	}
 
 	/**
-	 * Execute the query.
+	 * Execute the query and apply filters.
 	 *
 	 * @param array<string, mixed> $args WP_Term_Query arguments.
 	 * @return \WP_Term[]
 	 */
 	public function query( array $args ): array {
 		$query = new WP_Term_Query( $args );
+		$terms = $query->get_terms() ?: [];
 
-		return $query->get_terms() ?: [];
+		// Get filters from args if stored there, or return all terms.
+		if ( ! isset( $args['_filters'] ) ) {
+			return $terms;
+		}
+
+		$filters = $args['_filters'];
+
+		// Get Yoast taxonomy meta.
+		$tax_meta = get_option( 'wpseo_taxonomy_meta', [] );
+
+		// Apply meta filters.
+		if ( ! empty( $filters['has_meta'] ) || ! empty( $filters['empty_meta'] ) ) {
+			$terms = array_filter( $terms, function ( $term ) use ( $tax_meta, $filters ) {
+				$meta = $tax_meta[ $term->taxonomy ][ $term->term_id ] ?? [];
+
+				$has_title = ! empty( $meta['wpseo_title'] );
+				$has_desc  = ! empty( $meta['wpseo_desc'] );
+
+				// Filter by meta existence.
+				if ( ! empty( $filters['has_meta'] ) ) {
+					return $has_title || $has_desc;
+				}
+
+				// Filter by empty meta.
+				if ( ! empty( $filters['empty_meta'] ) ) {
+					return ! $has_title && ! $has_desc;
+				}
+
+				return true;
+			} );
+		}
+
+		// Apply pagination after filtering.
+		$per_page = $filters['per_page'] ?? self::TERMS_PER_PAGE;
+		$page     = $filters['page'] ?? 1;
+		$offset   = ( $page - 1 ) * $per_page;
+
+		return array_slice( $terms, $offset, $per_page );
 	}
 
 	/**
@@ -104,13 +95,12 @@ final class TermQueryBuilder {
 	 * @param array<string, mixed> $filters Export filters.
 	 */
 	public function get_total_count( array $filters = [] ): int {
-		$args           = $this->build_args( $filters );
-		$args['number'] = 0; // Get all terms for counting.
-		$args['fields'] = 'count';
-		unset( $args['offset'] );
+		$args              = $this->build_args( $filters );
+		$args['_filters']  = $filters; // Pass filters for PHP-based filtering.
+		$args['fields']    = 'all'; // Need full objects to filter.
 
-		$query = new WP_Term_Query( $args );
+		$terms = $this->query( $args );
 
-		return (int) $query->get_terms();
+		return count( $terms );
 	}
 }

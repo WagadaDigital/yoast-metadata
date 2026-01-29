@@ -58,6 +58,7 @@ final class TaxonomyExportHandler {
 			$filters['page']     = $page;
 			$filters['per_page'] = $per_page;
 			$args                = $query_builder->build_args( $filters );
+			$args['_filters']    = $filters; // Pass filters for PHP-based filtering.
 			$terms               = $query_builder->query( $args );
 
 			foreach ( $terms as $term ) {

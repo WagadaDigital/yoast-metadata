@@ -6,19 +6,20 @@ namespace WagadaDigital\YoastMetadata\Taxonomies;
 
 /**
  * Handles reading and writing Yoast SEO meta fields for taxonomy terms.
+ * Note: Yoast stores taxonomy meta in the 'wpseo_taxonomy_meta' option, not in term_meta.
  */
 final class TermMetaHandler {
 
 	/**
-	 * Yoast meta keys for terms.
-	 * Note: Yoast uses the same meta keys for terms as for posts.
+	 * Yoast meta keys for terms (stored in wpseo_taxonomy_meta option).
+	 * Note: These are different from post meta keys.
 	 */
-	public const META_TITLE       = '_yoast_wpseo_title';
-	public const META_DESCRIPTION = '_yoast_wpseo_metadesc';
-	public const META_FOCUSKW     = '_yoast_wpseo_focuskw';
-	public const META_CANONICAL   = '_yoast_wpseo_canonical';
-	public const META_NOINDEX     = '_yoast_wpseo_meta-robots-noindex';
-	public const META_NOFOLLOW    = '_yoast_wpseo_meta-robots-nofollow';
+	public const META_TITLE       = 'wpseo_title';
+	public const META_DESCRIPTION = 'wpseo_desc';
+	public const META_FOCUSKW     = 'wpseo_focuskw';
+	public const META_CANONICAL   = 'wpseo_canonical';
+	public const META_NOINDEX     = 'wpseo_noindex';
+	public const META_NOFOLLOW    = 'wpseo_nofollow';
 
 	private TaxonomyRegistry $registry;
 
@@ -32,13 +33,29 @@ final class TermMetaHandler {
 	 * @return array<string, string>
 	 */
 	public function get_meta( int $term_id ): array {
+		$tax_meta = get_option( 'wpseo_taxonomy_meta', [] );
+		$term     = get_term( $term_id );
+		
+		if ( ! $term || is_wp_error( $term ) ) {
+			return [
+				'title'       => '',
+				'description' => '',
+				'focuskw'     => '',
+				'canonical'   => '',
+				'noindex'     => '',
+				'nofollow'    => '',
+			];
+		}
+		
+		$meta = $tax_meta[ $term->taxonomy ][ $term_id ] ?? [];
+		
 		return [
-			'title'       => (string) get_term_meta( $term_id, self::META_TITLE, true ),
-			'description' => (string) get_term_meta( $term_id, self::META_DESCRIPTION, true ),
-			'focuskw'     => (string) get_term_meta( $term_id, self::META_FOCUSKW, true ),
-			'canonical'   => (string) get_term_meta( $term_id, self::META_CANONICAL, true ),
-			'noindex'     => (string) get_term_meta( $term_id, self::META_NOINDEX, true ),
-			'nofollow'    => (string) get_term_meta( $term_id, self::META_NOFOLLOW, true ),
+			'title'       => (string) ( $meta[ self::META_TITLE ] ?? '' ),
+			'description' => (string) ( $meta[ self::META_DESCRIPTION ] ?? '' ),
+			'focuskw'     => (string) ( $meta[ self::META_FOCUSKW ] ?? '' ),
+			'canonical'   => (string) ( $meta[ self::META_CANONICAL ] ?? '' ),
+			'noindex'     => (string) ( $meta[ self::META_NOINDEX ] ?? '' ),
+			'nofollow'    => (string) ( $meta[ self::META_NOFOLLOW ] ?? '' ),
 		];
 	}
 
@@ -56,40 +73,57 @@ final class TermMetaHandler {
 			return false;
 		}
 
+		// Get the current taxonomy meta option.
+		$tax_meta = get_option( 'wpseo_taxonomy_meta', [] );
+		
+		// Initialize the taxonomy and term arrays if they don't exist.
+		if ( ! isset( $tax_meta[ $taxonomy ] ) ) {
+			$tax_meta[ $taxonomy ] = [];
+		}
+		if ( ! isset( $tax_meta[ $taxonomy ][ $term_id ] ) ) {
+			$tax_meta[ $taxonomy ][ $term_id ] = [];
+		}
+		
 		$updated = false;
 
 		if ( isset( $data['title'] ) && '' !== $data['title'] ) {
-			update_term_meta( $term_id, self::META_TITLE, sanitize_text_field( $data['title'] ) );
+			$tax_meta[ $taxonomy ][ $term_id ][ self::META_TITLE ] = sanitize_text_field( $data['title'] );
 			$updated = true;
 		}
 
 		if ( isset( $data['description'] ) && '' !== $data['description'] ) {
-			update_term_meta( $term_id, self::META_DESCRIPTION, sanitize_textarea_field( $data['description'] ) );
+			$tax_meta[ $taxonomy ][ $term_id ][ self::META_DESCRIPTION ] = sanitize_textarea_field( $data['description'] );
 			$updated = true;
 		}
 
 		if ( isset( $data['focuskw'] ) && '' !== $data['focuskw'] ) {
-			update_term_meta( $term_id, self::META_FOCUSKW, sanitize_text_field( $data['focuskw'] ) );
+			$tax_meta[ $taxonomy ][ $term_id ][ self::META_FOCUSKW ] = sanitize_text_field( $data['focuskw'] );
 			$updated = true;
 		}
 
 		if ( isset( $data['canonical'] ) && '' !== $data['canonical'] ) {
-			update_term_meta( $term_id, self::META_CANONICAL, esc_url_raw( $data['canonical'] ) );
+			$tax_meta[ $taxonomy ][ $term_id ][ self::META_CANONICAL ] = esc_url_raw( $data['canonical'] );
 			$updated = true;
 		}
 
 		// Handle noindex.
 		if ( isset( $data['noindex'] ) && '' !== $data['noindex'] ) {
 			$noindex_value = $this->parse_boolean_value( $data['noindex'] );
-			update_term_meta( $term_id, self::META_NOINDEX, $noindex_value ? '1' : '0' );
+			$tax_meta[ $taxonomy ][ $term_id ][ self::META_NOINDEX ] = $noindex_value ? 'noindex' : '';
 			$updated = true;
 		}
 
 		// Handle nofollow.
 		if ( isset( $data['nofollow'] ) && '' !== $data['nofollow'] ) {
 			$nofollow_value = $this->parse_boolean_value( $data['nofollow'] );
-			update_term_meta( $term_id, self::META_NOFOLLOW, $nofollow_value ? '1' : '0' );
+			$tax_meta[ $taxonomy ][ $term_id ][ self::META_NOFOLLOW ] = $nofollow_value ? 'nofollow' : '';
 			$updated = true;
+		}
+
+		if ( $updated ) {
+			// Prevent complete array validation.
+			$tax_meta['wpseo_already_validated'] = true;
+			update_option( 'wpseo_taxonomy_meta', $tax_meta );
 		}
 
 		return $updated;
@@ -146,10 +180,10 @@ final class TermMetaHandler {
 	/**
 	 * Format a boolean meta value for export.
 	 *
-	 * @param string $value The meta value (typically '1' or empty).
+	 * @param string $value The meta value (typically 'noindex'/'nofollow' or empty).
 	 * @return string 'yes' or 'no'.
 	 */
 	public function format_boolean_for_export( string $value ): string {
-		return ( '1' === $value ) ? 'yes' : 'no';
+		return ( 'noindex' === $value || 'nofollow' === $value || '1' === $value ) ? 'yes' : 'no';
 	}
 }
