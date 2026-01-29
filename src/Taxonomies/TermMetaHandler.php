@@ -124,6 +124,9 @@ final class TermMetaHandler {
 			// Prevent complete array validation.
 			$tax_meta['wpseo_already_validated'] = true;
 			update_option( 'wpseo_taxonomy_meta', $tax_meta );
+
+			// Rebuild the Yoast indexable for this term so changes appear on frontend.
+			$this->rebuild_term_indexable( $term_id, $taxonomy );
 		}
 
 		return $updated;
@@ -185,5 +188,52 @@ final class TermMetaHandler {
 	 */
 	public function format_boolean_for_export( string $value ): string {
 		return ( 'noindex' === $value || 'nofollow' === $value || '1' === $value ) ? 'yes' : 'no';
+	}
+
+	/**
+	 * Rebuild the Yoast indexable for a term.
+	 *
+	 * Yoast SEO caches term metadata in the yoast_indexable table.
+	 * After updating the wpseo_taxonomy_meta option directly, we need to
+	 * rebuild the indexable so changes appear on the frontend.
+	 *
+	 * @param int    $term_id  Term ID.
+	 * @param string $taxonomy Taxonomy name.
+	 */
+	private function rebuild_term_indexable( int $term_id, string $taxonomy ): void {
+		// Check if Yoast SEO's indexable system is available.
+		if ( ! class_exists( 'Yoast\WP\SEO\Main' ) ) {
+			return;
+		}
+
+		try {
+			$container = \YoastSEO()->classes;
+
+			if ( ! $container ) {
+				return;
+			}
+
+			// Get the indexable repository and term builder from Yoast's DI container.
+			$indexable_repository = $container->get( 'Yoast\WP\SEO\Repositories\Indexable_Repository' );
+			$term_builder         = $container->get( 'Yoast\WP\SEO\Builders\Indexable_Term_Builder' );
+
+			if ( ! $indexable_repository || ! $term_builder ) {
+				return;
+			}
+
+			// Find existing indexable or create a new one.
+			$indexable = $indexable_repository->find_by_id_and_type( $term_id, 'term' );
+
+			if ( ! $indexable ) {
+				$indexable = $indexable_repository->create_for_id_and_type( $term_id, 'term' );
+			}
+
+			// Rebuild the indexable with fresh data.
+			$term_builder->build( $term_id, $indexable );
+			$indexable->save();
+		} catch ( \Exception $e ) {
+			// Silently fail - the meta is still saved, just not immediately visible.
+			// The indexable will be rebuilt on next page visit or manual edit.
+		}
 	}
 }
