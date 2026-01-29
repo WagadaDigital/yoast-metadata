@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Holo\YoastMetadata\Import;
+namespace WagadaDigital\YoastMetadata\Import;
 
-use Holo\YoastMetadata\Core\Plugin;
-use Holo\YoastMetadata\PostTypes\MetaHandler;
+use WagadaDigital\YoastMetadata\Core\Plugin;
+use WagadaDigital\YoastMetadata\PostTypes\MetaHandler;
 
 /**
  * Handles batch processing of CSV imports.

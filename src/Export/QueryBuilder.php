@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Holo\YoastMetadata\Export;
+namespace WagadaDigital\YoastMetadata\Export;
 
 use WP_Query;
 

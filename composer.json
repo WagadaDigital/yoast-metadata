@@ -1,8 +1,8 @@
 {
-  "name": "holo/yoast-metadata",
+  "name": "wagadadigital/yoast-metadata",
   "autoload": {
     "psr-4": {
-      "Holo\\YoastMetadata\\": "src/"
+      "WagadaDigital\\YoastMetadata\\": "src/"
     }
   },
   "authors": [

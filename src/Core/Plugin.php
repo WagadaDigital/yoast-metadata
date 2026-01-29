@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Holo\YoastMetadata\Core;
+namespace WagadaDigital\YoastMetadata\Core;
 
-use Holo\YoastMetadata\Admin\AdminPage;
-use Holo\YoastMetadata\Admin\Assets;
-use Holo\YoastMetadata\Import\ImportHandler;
-use Holo\YoastMetadata\Export\ExportHandler;
-use Holo\YoastMetadata\PostTypes\PostTypeRegistry;
-use Holo\YoastMetadata\PostTypes\MetaHandler;
+use WagadaDigital\YoastMetadata\Admin\AdminPage;
+use WagadaDigital\YoastMetadata\Admin\Assets;
+use WagadaDigital\YoastMetadata\Import\ImportHandler;
+use WagadaDigital\YoastMetadata\Export\ExportHandler;
+use WagadaDigital\YoastMetadata\PostTypes\PostTypeRegistry;
+use WagadaDigital\YoastMetadata\PostTypes\MetaHandler;
 
 /**
  * Main plugin bootstrap class.

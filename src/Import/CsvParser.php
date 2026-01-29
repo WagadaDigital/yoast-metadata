@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Holo\YoastMetadata\Import;
+namespace WagadaDigital\YoastMetadata\Import;
 
 use Exception;
 

@@ -2,14 +2,14 @@
 /**
  * Export tab template.
  *
- * @package Holo\YoastMetadata
+ * @package WagadaDigital\YoastMetadata
  *
  * @var array $post_types Array of supported post types.
  */
 
 defined( 'ABSPATH' ) || exit;
 
-use Holo\YoastMetadata\Core\Plugin;
+use WagadaDigital\YoastMetadata\Core\Plugin;
 ?>
 <div class="yoast-metadata-card">
     <h2><?php esc_html_e( 'Export to CSV', 'yoast-metadata' ); ?></h2>

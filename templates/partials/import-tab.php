@@ -2,7 +2,7 @@
 /**
  * Import tab template.
  *
- * @package Holo\YoastMetadata
+ * @package WagadaDigital\YoastMetadata
  */
 
 defined( 'ABSPATH' ) || exit;

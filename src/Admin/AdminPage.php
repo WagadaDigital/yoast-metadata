@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Holo\YoastMetadata\Admin;
+namespace WagadaDigital\YoastMetadata\Admin;
 
-use Holo\YoastMetadata\Core\Plugin;
-use Holo\YoastMetadata\Import\ImportHandler;
-use Holo\YoastMetadata\Export\ExportHandler;
-use Holo\YoastMetadata\PostTypes\PostTypeRegistry;
+use WagadaDigital\YoastMetadata\Core\Plugin;
+use WagadaDigital\YoastMetadata\Import\ImportHandler;
+use WagadaDigital\YoastMetadata\Export\ExportHandler;
+use WagadaDigital\YoastMetadata\PostTypes\PostTypeRegistry;
 
 /**
  * Admin page controller.

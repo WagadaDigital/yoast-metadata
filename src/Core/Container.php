@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Holo\YoastMetadata\Core;
+namespace WagadaDigital\YoastMetadata\Core;
 
 use Closure;
 use Exception;

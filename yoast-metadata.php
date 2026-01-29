@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Yoast Metadata
- * Plugin URI:        https://github.com/holodev/yoast-metadata
+ * Plugin URI:        https://github.com/WagadaDigital/yoast-metadata
  * Description:       Bulk manage Yoast SEO metadata across posts, pages, and custom post types via CSV import/export.
  * Requires at least: 6.1
  * Requires PHP:      7.4
@@ -13,14 +13,14 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       yoast-metadata
  *
- * @package Holo\YoastMetadata
+ * @package WagadaDigital\YoastMetadata
  */
 
 declare(strict_types=1);
 
-namespace Holo\YoastMetadata;
+namespace WagadaDigital\YoastMetadata;
 
-use Holo\YoastMetadata\Core\Plugin;
+use WagadaDigital\YoastMetadata\Core\Plugin;
 
 // Prevent direct access.
 defined( 'ABSPATH' ) || exit;

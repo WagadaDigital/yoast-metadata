@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Holo\YoastMetadata\PostTypes;
+namespace WagadaDigital\YoastMetadata\PostTypes;
 
-use Holo\YoastMetadata\Core\Plugin;
+use WagadaDigital\YoastMetadata\Core\Plugin;
 use WP_Post_Type;
 
 /**

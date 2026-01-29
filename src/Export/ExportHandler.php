@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Holo\YoastMetadata\Export;
+namespace WagadaDigital\YoastMetadata\Export;
 
-use Holo\YoastMetadata\Core\Plugin;
-use Holo\YoastMetadata\PostTypes\MetaHandler;
-use Holo\YoastMetadata\PostTypes\PostTypeRegistry;
+use WagadaDigital\YoastMetadata\Core\Plugin;
+use WagadaDigital\YoastMetadata\PostTypes\MetaHandler;
+use WagadaDigital\YoastMetadata\PostTypes\PostTypeRegistry;
 
 /**
  * Handles CSV export functionality.

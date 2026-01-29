@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Holo\YoastMetadata\Admin;
+namespace WagadaDigital\YoastMetadata\Admin;
 
-use Holo\YoastMetadata\Core\Plugin;
+use WagadaDigital\YoastMetadata\Core\Plugin;
 
 /**
  * Handles enqueueing of admin scripts and styles.

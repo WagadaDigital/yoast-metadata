@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Holo\YoastMetadata\PostTypes;
+namespace WagadaDigital\YoastMetadata\PostTypes;
 
 /**
  * Handles reading and writing Yoast SEO meta fields.
