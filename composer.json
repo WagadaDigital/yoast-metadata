@@ -2,7 +2,7 @@
   "name": "holo/yoast-metadata",
   "autoload": {
     "psr-4": {
-      "Holo\\YoastMetadata\\": "app/"
+      "Holo\\YoastMetadata\\": "src/"
     }
   },
   "authors": [
