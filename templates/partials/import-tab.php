@@ -24,6 +24,16 @@ defined( 'ABSPATH' ) || exit;
         <code>nofollow=yes</code> <?php esc_html_e( 'means "Don\'t follow links".', 'yoast-metadata' ); ?>
     </div>
 
+    <div class="yoast-metadata-import-options" style="margin-bottom: 20px;">
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="yoast-metadata-skip-existing" value="1">
+            <span><?php esc_html_e( 'Skip posts/pages that already have a meta description', 'yoast-metadata' ); ?></span>
+        </label>
+        <p class="description" style="margin-left: 26px;">
+            <?php esc_html_e( 'When enabled, posts with an existing Yoast meta description will be skipped during import.', 'yoast-metadata' ); ?>
+        </p>
+    </div>
+
     <div class="yoast-metadata-upload-area">
         <input type="file" id="yoast-metadata-csv-file" accept=".csv">
         <label for="yoast-metadata-csv-file">

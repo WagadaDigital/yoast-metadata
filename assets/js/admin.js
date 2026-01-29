@@ -85,6 +85,11 @@
             formData.append('nonce', yoastMetadata.nonce);
             formData.append('csv_file', file);
 
+            // Add skip_existing option
+            if ($('#yoast-metadata-skip-existing').is(':checked')) {
+                formData.append('skip_existing', '1');
+            }
+
             this.showProgress(0, yoastMetadata.i18n.processing);
 
             $.ajax({

@@ -74,9 +74,12 @@ final class ImportHandler {
                 wp_send_json_error( [ 'message' => __( 'CSV file contains no valid data rows.', 'yoast-metadata' ) ] );
             }
 
+            // Get skip_existing option from request.
+            $skip_existing = ! empty( $_POST['skip_existing'] );
+
             // Store rows for import.
             $processor = $this->get_processor();
-            $import_id = $processor->store_import( $rows );
+            $import_id = $processor->store_import( $rows, 50, $skip_existing );
 
             // Return preview data (first 50 rows).
             $preview_rows = array_slice( $rows, 0, 50 );
