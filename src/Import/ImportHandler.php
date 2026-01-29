@@ -42,9 +42,27 @@ final class ImportHandler {
 
         $file = $_FILES['csv_file'];
 
-        // Validate file type.
-        $allowed_types = [ 'text/csv', 'application/csv', 'text/plain' ];
-        if ( ! in_array( $file['type'], $allowed_types, true ) ) {
+        // Validate file extension and type.
+        $filename  = $file['name'] ?? '';
+        $extension = strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) );
+
+        // Check file extension first (most reliable).
+        if ( 'csv' !== $extension ) {
+            wp_send_json_error( [ 'message' => __( 'Invalid file type. Please upload a CSV file.', 'yoast-metadata' ) ] );
+        }
+
+        // Also check MIME type, but be permissive as browsers report different types.
+        $allowed_types = [
+            'text/csv',
+            'text/plain',
+            'text/x-csv',
+            'application/csv',
+            'application/x-csv',
+            'application/vnd.ms-excel',
+            'application/octet-stream',
+        ];
+
+        if ( ! empty( $file['type'] ) && ! in_array( $file['type'], $allowed_types, true ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid file type. Please upload a CSV file.', 'yoast-metadata' ) ] );
         }
 
