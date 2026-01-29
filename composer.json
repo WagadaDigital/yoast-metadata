@@ -1,0 +1,15 @@
+{
+  "name": "holo/yoast-metadata",
+  "autoload": {
+    "psr-4": {
+      "Holo\\YoastMetadata\\": "app/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Marius Paduraru",
+      "email": "marius.paduraru@gmail.com"
+    }
+  ],
+  "require": {}
+}

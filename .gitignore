@@ -1,2 +1,7 @@
 # Bulk Seo Updater
 bulk-seo-updater/
+
+# Claude
+.claude/
+CLAUDE.md
+/vendor/
