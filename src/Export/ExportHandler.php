@@ -49,7 +49,7 @@ final class ExportHandler {
         $output = fopen( 'php://output', 'w' );
 
         // Write CSV header.
-        fputcsv( $output, [ 'url', 'post_type', 'title', 'description', 'focuskw', 'canonical' ] );
+        fputcsv( $output, [ 'url', 'post_type', 'title', 'description', 'focuskw', 'canonical', 'noindex', 'nofollow' ] );
 
         // Process in batches to handle large exports.
         $page = 1;
@@ -71,6 +71,8 @@ final class ExportHandler {
                     $meta['description'],
                     $meta['focuskw'],
                     $meta['canonical'],
+                    $this->meta_handler->format_boolean_for_export( $meta['noindex'] ),
+                    $this->meta_handler->format_boolean_for_export( $meta['nofollow'] ),
                 ]);
             }
 

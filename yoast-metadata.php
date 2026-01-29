@@ -6,7 +6,7 @@
  * Requires at least: 6.1
  * Requires PHP:      7.4
  * Requires Plugins:  wordpress-seo
- * Version:           1.0.0
+ * Version:           0.0.3
  * Author:            Marius Paduraru
  * Author URI:        https://github.com/holodev
  * License:           GPL-2.0-or-later

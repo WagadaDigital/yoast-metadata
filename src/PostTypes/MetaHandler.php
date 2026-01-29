@@ -76,13 +76,19 @@ final class MetaHandler {
             $updated = true;
         }
 
-        if ( isset( $data['noindex'] ) ) {
-            update_post_meta( $post_id, self::META_NOINDEX, $data['noindex'] ? '1' : '0' );
+        // Handle noindex (Allow search engines to show this content).
+        // Values: empty/0/no/false = Yes (index), 1/yes/true = No (noindex).
+        if ( isset( $data['noindex'] ) && '' !== $data['noindex'] ) {
+            $noindex_value = $this->parse_boolean_value( $data['noindex'] );
+            update_post_meta( $post_id, self::META_NOINDEX, $noindex_value ? '1' : '0' );
             $updated = true;
         }
 
-        if ( isset( $data['nofollow'] ) ) {
-            update_post_meta( $post_id, self::META_NOFOLLOW, $data['nofollow'] ? '1' : '0' );
+        // Handle nofollow (Should search engines follow links).
+        // Values: empty/0/no/false = Yes (follow), 1/yes/true = No (nofollow).
+        if ( isset( $data['nofollow'] ) && '' !== $data['nofollow'] ) {
+            $nofollow_value = $this->parse_boolean_value( $data['nofollow'] );
+            update_post_meta( $post_id, self::META_NOFOLLOW, $nofollow_value ? '1' : '0' );
             $updated = true;
         }
 
@@ -109,5 +115,33 @@ final class MetaHandler {
      */
     public function get_post_url( int $post_id ): string {
         return (string) get_permalink( $post_id );
+    }
+
+    /**
+     * Parse a boolean value from CSV input.
+     *
+     * Accepts: 1, 0, yes, no, true, false (case-insensitive).
+     *
+     * @param mixed $value The value to parse.
+     * @return bool True if the value represents a truthy value.
+     */
+    private function parse_boolean_value( $value ): bool {
+        if ( is_bool( $value ) ) {
+            return $value;
+        }
+
+        $value = strtolower( trim( (string) $value ) );
+
+        return in_array( $value, [ '1', 'yes', 'true' ], true );
+    }
+
+    /**
+     * Format a boolean meta value for export.
+     *
+     * @param string $value The meta value (typically '1' or empty).
+     * @return string 'yes' or 'no'.
+     */
+    public function format_boolean_for_export( string $value ): string {
+        return ( '1' === $value ) ? 'yes' : 'no';
     }
 }

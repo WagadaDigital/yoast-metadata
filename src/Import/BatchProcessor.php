@@ -131,7 +131,9 @@ final class BatchProcessor {
 
             // Check if there's anything to update.
             $has_data = ! empty( $row['title'] ) || ! empty( $row['description'] ) ||
-                        ! empty( $row['focuskw'] ) || ! empty( $row['canonical'] );
+                        ! empty( $row['focuskw'] ) || ! empty( $row['canonical'] ) ||
+                        isset( $row['noindex'] ) && '' !== $row['noindex'] ||
+                        isset( $row['nofollow'] ) && '' !== $row['nofollow'];
 
             if ( ! $has_data ) {
                 $results['skipped'][] = $url;
@@ -143,6 +145,8 @@ final class BatchProcessor {
                 'description' => $row['description'] ?? '',
                 'focuskw'     => $row['focuskw'] ?? '',
                 'canonical'   => $row['canonical'] ?? '',
+                'noindex'     => $row['noindex'] ?? '',
+                'nofollow'    => $row['nofollow'] ?? '',
             ]);
 
             if ( $updated ) {

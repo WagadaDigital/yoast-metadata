@@ -15,7 +15,13 @@ defined( 'ABSPATH' ) || exit;
         <?php esc_html_e( 'Your CSV must include a header row with at least a', 'yoast-metadata' ); ?>
         <code>url</code>
         <?php esc_html_e( 'column. Optional columns:', 'yoast-metadata' ); ?>
-        <code>title</code>, <code>description</code>, <code>focuskw</code>, <code>canonical</code>
+        <code>title</code>, <code>description</code>, <code>focuskw</code>, <code>canonical</code>, <code>noindex</code>, <code>nofollow</code>
+        <br><br>
+        <strong><?php esc_html_e( 'Robot settings:', 'yoast-metadata' ); ?></strong>
+        <?php esc_html_e( 'Use', 'yoast-metadata' ); ?> <code>yes</code> <?php esc_html_e( 'or', 'yoast-metadata' ); ?> <code>no</code>
+        <?php esc_html_e( 'for noindex/nofollow columns.', 'yoast-metadata' ); ?>
+        <code>noindex=yes</code> <?php esc_html_e( 'means "Don\'t show in search results".', 'yoast-metadata' ); ?>
+        <code>nofollow=yes</code> <?php esc_html_e( 'means "Don\'t follow links".', 'yoast-metadata' ); ?>
     </div>
 
     <div class="yoast-metadata-upload-area">
@@ -64,25 +70,33 @@ defined( 'ABSPATH' ) || exit;
 
 <div class="yoast-metadata-card">
     <h2><?php esc_html_e( 'Example CSV', 'yoast-metadata' ); ?></h2>
-    <table class="widefat striped" style="max-width: 800px;">
-        <thead>
-            <tr>
-                <th>url</th>
-                <th>title</th>
-                <th>description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>https://example.com/about</td>
-                <td>About Us - Company Name</td>
-                <td>Learn more about our company and mission.</td>
-            </tr>
-            <tr>
-                <td>https://example.com/services</td>
-                <td>Our Services | Company Name</td>
-                <td>Explore our wide range of professional services.</td>
-            </tr>
-        </tbody>
-    </table>
+    <div style="overflow-x: auto;">
+        <table class="widefat striped">
+            <thead>
+                <tr>
+                    <th>url</th>
+                    <th>title</th>
+                    <th>description</th>
+                    <th>noindex</th>
+                    <th>nofollow</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>https://example.com/about</td>
+                    <td>About Us - Company Name</td>
+                    <td>Learn more about our company and mission.</td>
+                    <td>no</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>https://example.com/private</td>
+                    <td>Private Page</td>
+                    <td>This page should not appear in search.</td>
+                    <td>yes</td>
+                    <td>yes</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

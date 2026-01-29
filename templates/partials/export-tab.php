@@ -94,6 +94,14 @@ use WagadaDigital\YoastMetadata\Core\Plugin;
                 <td><code>canonical</code></td>
                 <td><?php esc_html_e( 'Canonical URL (if set)', 'yoast-metadata' ); ?></td>
             </tr>
+            <tr>
+                <td><code>noindex</code></td>
+                <td><?php esc_html_e( 'Allow search engines to show this content (yes = don\'t show, no = show)', 'yoast-metadata' ); ?></td>
+            </tr>
+            <tr>
+                <td><code>nofollow</code></td>
+                <td><?php esc_html_e( 'Should search engines follow links (yes = don\'t follow, no = follow)', 'yoast-metadata' ); ?></td>
+            </tr>
         </tbody>
     </table>
 </div>
