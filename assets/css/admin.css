@@ -36,6 +36,14 @@
     font-weight: 600;
 }
 
+/* Tab Separator */
+.yoast-metadata-tab-separator {
+    width: 1px;
+    background: #c3c4c7;
+    margin: 5px 10px;
+    align-self: stretch;
+}
+
 /* Cards */
 .yoast-metadata-card {
     background: #fff;

@@ -10,6 +10,10 @@ use WagadaDigital\YoastMetadata\Import\ImportHandler;
 use WagadaDigital\YoastMetadata\Export\ExportHandler;
 use WagadaDigital\YoastMetadata\PostTypes\PostTypeRegistry;
 use WagadaDigital\YoastMetadata\PostTypes\MetaHandler;
+use WagadaDigital\YoastMetadata\Taxonomies\TaxonomyRegistry;
+use WagadaDigital\YoastMetadata\Taxonomies\TermMetaHandler;
+use WagadaDigital\YoastMetadata\Taxonomies\TaxonomyImportHandler;
+use WagadaDigital\YoastMetadata\Taxonomies\TaxonomyExportHandler;
 
 /**
  * Main plugin bootstrap class.
@@ -84,12 +88,30 @@ final class Plugin {
             return new Assets( $c->get( 'plugin_url' ), $c->get( 'plugin_path' ) );
         });
 
+        // Taxonomy services.
+        $this->container->set( TaxonomyRegistry::class, function () {
+            return new TaxonomyRegistry();
+        });
+
+        $this->container->set( TermMetaHandler::class, function ( Container $c ) {
+            return new TermMetaHandler( $c->get( TaxonomyRegistry::class ) );
+        });
+
+        $this->container->set( TaxonomyImportHandler::class, function ( Container $c ) {
+            return new TaxonomyImportHandler( $c->get( TermMetaHandler::class ) );
+        });
+
+        $this->container->set( TaxonomyExportHandler::class, function ( Container $c ) {
+            return new TaxonomyExportHandler( $c->get( TermMetaHandler::class ), $c->get( TaxonomyRegistry::class ) );
+        });
+
         $this->container->set( AdminPage::class, function ( Container $c ) {
             return new AdminPage(
                 $c->get( Assets::class ),
                 $c->get( ImportHandler::class ),
                 $c->get( ExportHandler::class ),
                 $c->get( PostTypeRegistry::class ),
+                $c->get( TaxonomyRegistry::class ),
                 $c->get( 'plugin_path' )
             );
         });
@@ -119,6 +141,8 @@ final class Plugin {
 
         $this->container->get( ImportHandler::class )->register();
         $this->container->get( ExportHandler::class )->register();
+        $this->container->get( TaxonomyImportHandler::class )->register();
+        $this->container->get( TaxonomyExportHandler::class )->register();
     }
 
     /**

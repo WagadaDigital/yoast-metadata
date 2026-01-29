@@ -8,6 +8,7 @@ use WagadaDigital\YoastMetadata\Core\Plugin;
 use WagadaDigital\YoastMetadata\Import\ImportHandler;
 use WagadaDigital\YoastMetadata\Export\ExportHandler;
 use WagadaDigital\YoastMetadata\PostTypes\PostTypeRegistry;
+use WagadaDigital\YoastMetadata\Taxonomies\TaxonomyRegistry;
 
 /**
  * Admin page controller.
@@ -18,6 +19,7 @@ final class AdminPage {
     private ImportHandler $import_handler;
     private ExportHandler $export_handler;
     private PostTypeRegistry $post_type_registry;
+    private TaxonomyRegistry $taxonomy_registry;
     private string $plugin_path;
 
     public function __construct(
@@ -25,12 +27,14 @@ final class AdminPage {
         ImportHandler $import_handler,
         ExportHandler $export_handler,
         PostTypeRegistry $post_type_registry,
+        TaxonomyRegistry $taxonomy_registry,
         string $plugin_path
     ) {
         $this->assets             = $assets;
         $this->import_handler     = $import_handler;
         $this->export_handler     = $export_handler;
         $this->post_type_registry = $post_type_registry;
+        $this->taxonomy_registry  = $taxonomy_registry;
         $this->plugin_path        = $plugin_path;
     }
 
@@ -60,6 +64,7 @@ final class AdminPage {
      */
     public function render_page(): void {
         $post_types = $this->post_type_registry->get_supported_post_types();
+        $taxonomies = $this->taxonomy_registry->get_supported_taxonomies();
         $active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'import';
 
         include $this->plugin_path . 'templates/admin-page.php';
