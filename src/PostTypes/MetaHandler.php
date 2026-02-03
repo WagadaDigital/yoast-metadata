@@ -98,16 +98,47 @@ final class MetaHandler {
     /**
      * Resolve a URL to a post ID.
      *
-     * Uses VIP function if available.
+     * Uses VIP function if available. Falls back to slug-based lookup
+     * for custom post types with complex URL structures.
      */
     public function url_to_post_id( string $url ): int {
         $url = esc_url_raw( $url );
 
+        // Try standard WordPress function first.
         if ( function_exists( 'wpcom_vip_url_to_postid' ) ) {
-            return (int) wpcom_vip_url_to_postid( $url );
+            $post_id = (int) wpcom_vip_url_to_postid( $url );
+        } else {
+            $post_id = (int) url_to_postid( $url );
         }
 
-        return (int) url_to_postid( $url );
+        if ( $post_id > 0 ) {
+            return $post_id;
+        }
+
+        // Fallback: Extract slug from URL and search across supported post types.
+        $path = wp_parse_url( $url, PHP_URL_PATH );
+        if ( ! $path ) {
+            return 0;
+        }
+
+        // Get the last segment as the slug (handles /article/member/slug/).
+        $path     = trim( $path, '/' );
+        $segments = explode( '/', $path );
+        $slug     = end( $segments );
+
+        if ( empty( $slug ) ) {
+            return 0;
+        }
+
+        // Try to find post by slug across all supported post types.
+        $supported_types = array_keys( $this->registry->get_supported_post_types() );
+
+        $post = get_page_by_path( $slug, OBJECT, $supported_types );
+        if ( $post ) {
+            return $post->ID;
+        }
+
+        return 0;
     }
 
     /**

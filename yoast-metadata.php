@@ -6,9 +6,9 @@
  * Requires at least: 6.1
  * Requires PHP:      7.4
  * Requires Plugins:  wordpress-seo
- * Version:           0.0.6
- * Author:            Marius Paduraru
- * Author URI:        https://github.com/holodev
+ * Version:           0.0.7
+ * Author:            Wagada Digital
+ * Author URI:        https://wagada.co.uk
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       yoast-metadata
@@ -26,7 +26,7 @@ use WagadaDigital\YoastMetadata\Core\Plugin;
 defined( 'ABSPATH' ) || exit;
 
 // Define plugin constants.
-define( 'YOAST_METADATA_VERSION', '1.0.0' );
+define( 'YOAST_METADATA_VERSION', '0.0.7' );
 define( 'YOAST_METADATA_FILE', __FILE__ );
 define( 'YOAST_METADATA_PATH', plugin_dir_path( __FILE__ ) );
 define( 'YOAST_METADATA_URL', plugin_dir_url( __FILE__ ) );
