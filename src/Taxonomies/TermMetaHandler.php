@@ -135,11 +135,16 @@ final class TermMetaHandler {
 	/**
 	 * Resolve a term by slug and taxonomy.
 	 *
-	 * @param string $slug     Term slug.
+	 * Flexibly handles plain slugs, full URLs, or paths.
+	 *
+	 * @param string $slug     Term slug, URL, or path.
 	 * @param string $taxonomy Taxonomy name.
 	 * @return int Term ID or 0 if not found.
 	 */
 	public function get_term_id_by_slug( string $slug, string $taxonomy ): int {
+		// Extract slug from URL if a full URL was provided.
+		$slug = $this->extract_slug_from_input( $slug );
+
 		$term = get_term_by( 'slug', sanitize_title( $slug ), $taxonomy );
 
 		if ( ! $term || is_wp_error( $term ) ) {
@@ -147,6 +152,32 @@ final class TermMetaHandler {
 		}
 
 		return $term->term_id;
+	}
+
+	/**
+	 * Extract a slug from various input formats.
+	 *
+	 * Handles: plain slugs, full URLs, or paths.
+	 *
+	 * @param string $input The input string (slug, URL, or path).
+	 * @return string The extracted slug.
+	 */
+	private function extract_slug_from_input( string $input ): string {
+		$input = trim( $input );
+
+		// If it looks like a URL, extract the path.
+		if ( str_starts_with( $input, 'http://' ) || str_starts_with( $input, 'https://' ) ) {
+			$path = wp_parse_url( $input, PHP_URL_PATH );
+			if ( $path ) {
+				$input = $path;
+			}
+		}
+
+		// Remove leading/trailing slashes and get the last segment.
+		$input    = trim( $input, '/' );
+		$segments = explode( '/', $input );
+
+		return end( $segments ) ?: $input;
 	}
 
 	/**
