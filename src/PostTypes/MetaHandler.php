@@ -98,7 +98,7 @@ final class MetaHandler {
     /**
      * Resolve a URL to a post ID.
      *
-     * Uses VIP function if available. Falls back to slug-based lookup
+     * Uses VIP function if available. Falls back to flexible slug-based lookup
      * for custom post types with complex URL structures.
      */
     public function url_to_post_id( string $url ): int {
@@ -115,27 +115,52 @@ final class MetaHandler {
             return $post_id;
         }
 
-        // Fallback: Extract slug from URL and search across supported post types.
+        // Fallback: Try multiple strategies to find the post.
         $path = wp_parse_url( $url, PHP_URL_PATH );
         if ( ! $path ) {
             return 0;
         }
 
-        // Get the last segment as the slug (handles /article/member/slug/).
-        $path     = trim( $path, '/' );
-        $segments = explode( '/', $path );
-        $slug     = end( $segments );
-
-        if ( empty( $slug ) ) {
-            return 0;
-        }
-
-        // Try to find post by slug across all supported post types.
+        $path            = trim( $path, '/' );
         $supported_types = array_keys( $this->registry->get_supported_post_types() );
 
-        $post = get_page_by_path( $slug, OBJECT, $supported_types );
+        // Strategy 1: Try full path (for hierarchical post types like pages).
+        $post = get_page_by_path( $path, OBJECT, $supported_types );
         if ( $post ) {
             return $post->ID;
+        }
+
+        // Strategy 2: Try each segment as a potential slug (from last to first).
+        $segments = explode( '/', $path );
+        for ( $i = count( $segments ) - 1; $i >= 0; $i-- ) {
+            $slug = $segments[ $i ];
+            if ( empty( $slug ) ) {
+                continue;
+            }
+
+            $post = get_page_by_path( $slug, OBJECT, $supported_types );
+            if ( $post ) {
+                return $post->ID;
+            }
+        }
+
+        // Strategy 3: Direct database lookup by post_name for edge cases.
+        global $wpdb;
+        $placeholders = implode( ',', array_fill( 0, count( $supported_types ), '%s' ) );
+        $last_slug    = end( $segments );
+
+        if ( ! empty( $last_slug ) ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $post_id = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT ID FROM {$wpdb->posts} WHERE post_name = %s AND post_type IN ($placeholders) AND post_status = 'publish' LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                    array_merge( [ $last_slug ], $supported_types )
+                )
+            );
+
+            if ( $post_id ) {
+                return (int) $post_id;
+            }
         }
 
         return 0;
