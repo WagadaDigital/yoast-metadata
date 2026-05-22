@@ -277,9 +277,16 @@
             }
 
             if (totals.failed > 0) {
+                let failedHtml = '<strong>' + yoastMetadata.i18n.failed + '</strong> ' + totals.failed;
+                if (totals.failed_urls && totals.failed_urls.length > 0) {
+                    failedHtml += '<details style="margin-top:6px"><summary style="cursor:pointer">Show failed URLs</summary><ul style="margin:6px 0 0 16px;padding:0">';
+                    totals.failed_urls.forEach(url => {
+                        failedHtml += '<li style="font-size:12px;word-break:break-all;margin-bottom:2px">' + url + '</li>';
+                    });
+                    failedHtml += '</ul></details>';
+                }
                 results.find('.yoast-metadata-result-items').append(
-                    $('<div class="yoast-metadata-result-item error">')
-                        .html('<strong>' + yoastMetadata.i18n.failed + '</strong> ' + totals.failed)
+                    $('<div class="yoast-metadata-result-item error">').html(failedHtml)
                 );
             }
 
@@ -539,9 +546,16 @@
             }
 
             if (totals.failed > 0) {
+                let failedHtml = '<strong>' + yoastMetadata.i18n.failed + '</strong> ' + totals.failed;
+                if (totals.failed_urls && totals.failed_urls.length > 0) {
+                    failedHtml += '<details style="margin-top:6px"><summary style="cursor:pointer">Show failed URLs</summary><ul style="margin:6px 0 0 16px;padding:0">';
+                    totals.failed_urls.forEach(url => {
+                        failedHtml += '<li style="font-size:12px;word-break:break-all;margin-bottom:2px">' + url + '</li>';
+                    });
+                    failedHtml += '</ul></details>';
+                }
                 results.find('.yoast-metadata-result-items').append(
-                    $('<div class="yoast-metadata-result-item error">')
-                        .html('<strong>' + yoastMetadata.i18n.failed + '</strong> ' + totals.failed)
+                    $('<div class="yoast-metadata-result-item error">').html(failedHtml)
                 );
             }
 

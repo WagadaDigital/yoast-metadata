@@ -7,14 +7,14 @@ namespace Composer\Autoload;
 class ComposerStaticInit4a728cedf982878bbe399c357b140be2
 {
     public static $prefixLengthsPsr4 = array (
-        'W' =>
+        'W' => 
         array (
             'WagadaDigital\\YoastMetadata\\' => 28,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'WagadaDigital\\YoastMetadata\\' =>
+        'WagadaDigital\\YoastMetadata\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),

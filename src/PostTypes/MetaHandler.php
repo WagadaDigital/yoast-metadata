@@ -102,6 +102,14 @@ final class MetaHandler {
      * for custom post types with complex URL structures.
      */
     public function url_to_post_id( string $url ): int {
+        // Normalize the host to match this site so url_to_postid() doesn't reject
+        // mismatched domains (e.g. CSV exported from prod used on a dev environment).
+        $home_host = wp_parse_url( home_url(), PHP_URL_HOST );
+        $url_parts = wp_parse_url( $url );
+        if ( $home_host && ! empty( $url_parts['host'] ) && $url_parts['host'] !== $home_host ) {
+            $url = str_replace( $url_parts['host'], $home_host, $url );
+        }
+
         $url = esc_url_raw( $url );
 
         // Try standard WordPress function first.

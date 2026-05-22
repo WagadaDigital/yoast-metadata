@@ -94,9 +94,10 @@ final class TaxonomyBatchProcessor {
 			'total'         => $data['total'],
 			'batch_results' => $batch_results,
 			'totals'        => [
-				'updated' => count( $data['updated'] ),
-				'skipped' => count( $data['skipped'] ),
-				'failed'  => count( $data['failed'] ),
+				'updated'     => count( $data['updated'] ),
+				'skipped'     => count( $data['skipped'] ),
+				'failed'      => count( $data['failed'] ),
+				'failed_urls' => $complete ? $data['failed'] : [],
 			],
 		];
 	}
